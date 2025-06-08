@@ -1,0 +1,165 @@
+:root {
+    --header-color:  rgb(42, 55, 89);
+    --header-height: 100px;
+    --navigation-color: rgb(119, 143, 210);
+    --main--color: rgb(255, 255, 255);
+
+    --shadow: 0 4px 16px rgba(0,0,0,0.12);
+    --border-color: rgb(0, 0, 0);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html{
+    /* height: calc(100% - var(--header-height)); */
+    height: 100%;
+}
+
+body, main, #content {
+    height: 100%;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+header {
+    background-color: var(--header-color);
+    box-shadow: var(--shadow);
+
+    height: var(--header-height);
+}
+/* header area */
+
+
+#content {
+    display: flex;
+}
+
+nav {
+    background-color: var(--navigation-color);
+
+    flex: 15%;
+}
+
+#createTask {
+    font-size: 1.8rem;
+    text-align: center;
+    align-content: center;
+
+    background-color: var(--main--color);
+
+    width: 35px;
+    height: 35px;
+
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+}
+#createTask button {
+    all: unset;
+    cursor: pointer;
+
+    width: 100%;
+    height: 100%;
+}
+
+article {
+    flex: 85%;
+}
+/* main content */
+
+
+dialog {
+    padding: 10px 20px;
+
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+
+    position: fixed;         
+    top: 50%;               
+    left: 50%;              
+    transform: translate(-50%, -50%);
+    z-index: 10;
+
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+Form {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+#title {
+    width: 100%;
+}
+
+textarea {
+    width: 220px;
+    height: 100px;
+    resize: none;
+}
+
+textarea, input, #create {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.dropdown {
+    display: flex;
+    justify-content: space-between;
+}
+
+#dueDate, #priority {
+    padding: 2px 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.invalid {
+    border: 1px solid rgb(179, 0, 0);
+}
+
+.tippy-box[data-theme~='myCustomTheme'] {
+  width: 240px;
+  background-color: #ffe9e9;
+  color: #333;
+  border: 1px solid #ffaaaa;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.tippy-box[data-theme~='myCustomTheme'] > .tippy-arrow {
+  color: #ffe9e9;
+}
+/* dialog area */
+
+
+footer {
+    background-color: var(--header-color);
+    height: calc(var(--header-height) / 2);
+}
+/* footer area */
