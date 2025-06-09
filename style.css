@@ -2,6 +2,7 @@
     --header-color:  rgb(42, 55, 89);
     --header-height: 100px;
     --navigation-color: rgb(119, 143, 210);
+    --card-color: rgb(198, 210, 243);
     --main--color: rgb(255, 255, 255);
 
     --shadow: 0 4px 16px rgba(0,0,0,0.12);
@@ -21,6 +22,17 @@ html{
 
 body, main, #content {
     height: 100%;
+}
+body.blurred::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.20);
+  backdrop-filter: blur(2px);
+  z-index: 9;
 }
 
 main {
@@ -71,7 +83,78 @@ nav {
 }
 
 article {
+    padding: 20px 25px;
+
     flex: 85%;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+article > div {
+    padding: 5px 40px;
+
+    width: 100%;
+    height: 70px;
+
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 200px;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.name {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+
+  accent-color: var(--header-color);
+  border-radius: 50%;
+}
+
+.feature {
+    display: flex;
+    flex-direction: column;
+}
+
+.feature > div {
+    flex: 1;
+}
+
+.info {
+    display: flex;
+    gap: 20px;
+    align-items: end;
+}
+.info > h3 {
+    text-align: center;
+    width: 100px;
+}
+
+.priorityMenu {
+    padding: 5px 10px;
+
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.normal {
+    background-color: rgba(179, 229, 194, 0.9);
+}
+
+.priority {
+    background-color: rgba(255, 224, 125, 0.9);
+}
+
+.urgently {
+    background: linear-gradient(to top, rgba(240, 98, 93, 0.9), rgba(255, 215, 128, 0.9));
 }
 /* main content */
 
@@ -118,7 +201,7 @@ textarea {
     resize: none;
 }
 
-textarea, input, #create {
+textarea, input, #create, #edit {
     padding: 5px 10px;
     border: 1px solid var(--border-color);
     border-radius: 8px;

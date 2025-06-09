@@ -1,18 +1,17 @@
 function validationCheck() {
     const title = document.querySelector("dialog #title");
     const description = document.querySelector("dialog #description");
-    const dueDate = document.querySelector("dialog #dueDate");
-    const priority = document.querySelector("dialog #priority");
 
     const titleCheck = validateTitle(title);
     const descriptionCheck = validateDescription(description);
 
     if (titleCheck && descriptionCheck) {
-        console.log("Yes");
+        return true;
     } else {
-        console.log('No');
+        return false;
     };
 };
+// validation of all elements
 
 
 let activeTooltip = null;
@@ -35,29 +34,32 @@ function showTooltip(targetElement, message) {
         }
     });
 };
+// popup window for non-valid forms
 
 
 function validateTitle(title) {
-    if (title.value.length > 3) {
+    if (/^[a-zA-Z0-9_ -]{3,20}$/.test(title.value)) {
         title.classList.remove("invalid");
         return true;
     } else {
         title.classList.add("invalid");
-        showTooltip(title, "title should be no shorter than 3 characters");
+        showTooltip(title, "Only Latin letters, numbers, spaces, _ and - (3-20 characters) are allowed.");
         return false;
     };
 };
+// title validity check
 
 function validateDescription(description) {
-     if (description.value.length > 3 || description.value === "") {
+     if (/^[a-zA-Z0-9_ -]{3,120}$/.test(description.value) || description.value === "") {
         description.classList.remove("invalid");
         return true;
     } else {
         description.classList.add("invalid");
-        showTooltip(description, "description should be no shorter than 3 characters");
+        showTooltip(description, "Only Latin letters, numbers, spaces, _ and - (3-20 characters) are allowed.");
         return false;
     };
 };
+// description validity check
 
 
 export { validationCheck };
