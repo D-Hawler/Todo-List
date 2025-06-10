@@ -1,9 +1,9 @@
-function createTaskDOM(task) {
+function createTaskDOM(taskElement) {
     const article = document.querySelector("article");
 
     const main = document.createElement("div");
     main.classList.add("task");
-    main.id = task.ID;
+    main.id = taskElement.id;
 
     const name = document.createElement("div");
     name.classList.add("name");
@@ -13,7 +13,7 @@ function createTaskDOM(task) {
     input.setAttribute("name", "completed");
 
     const title = document.createElement("h2");
-    title.textContent = task.title;
+    title.textContent = taskElement.title;
 
     const feature = document.createElement("div");
     feature.classList.add("feature");
@@ -21,7 +21,7 @@ function createTaskDOM(task) {
     const buttons = document.createElement("div");
 
     const icon = [
-        {icon : `&#x2606;`, class: "a"},
+        {icon : `&#x2606;`, class: "favorite"},
         {icon : `&#128393;`, class: "edit"},
         {icon : `&#x1F5D1;`, class: "delete"}
     ];
@@ -37,12 +37,16 @@ function createTaskDOM(task) {
     info.classList.add("info");
 
     const date = document.createElement("h3");
-    date.textContent = task.dueDate;
+    if (taskElement.dueDate !== "Overdue" && taskElement.dueDate !== "Indefinitely") {
+        date.textContent = `Until ${taskElement.dueDate}`;
+    } else {
+        date.textContent = taskElement.dueDate;
+    };
 
     const priority = document.createElement("h3");
-    priority.textContent = task.priority;
+    priority.textContent = taskElement.priority;
     priority.classList.add("priorityMenu");
-    priority.classList.add(task.priority.toLowerCase());
+    priority.classList.add(taskElement.priority.toLowerCase());
 
     name.appendChild(input);
     name.appendChild(title);
@@ -59,4 +63,31 @@ function createTaskDOM(task) {
     article.appendChild(main);
 };
 
-export { createTaskDOM };
+import { getFromID } from "./creatorTask.js";
+function editTaskDOM(taskElement) {
+    const taskValue = getFromID(taskElement);
+    const taskDiv = document.getElementById(taskValue.id);
+
+    if (!taskDiv) {
+        throw Error("for some reason the task was not found in the task list");
+    };
+
+    const title = taskDiv.querySelector(".name h2");
+    title.textContent = taskValue.title;
+
+    const date = taskDiv.querySelector(".info h3");
+    if (taskValue.dueDate !== "Overdue" && taskValue.dueDate !== "Indefinitely") {
+        date.textContent = `Until ${taskValue.dueDate}`;
+    } else {
+        date.textContent = taskValue.dueDate;
+    };
+
+    const priority = taskDiv.querySelector(".info .priorityMenu");
+    priority.textContent = taskValue.priority;
+    if (priority.classList.length > 1) {
+        priority.classList.remove(priority.classList[1]);
+    };
+    priority.classList.add(taskValue.priority.toLowerCase());
+};
+
+export { createTaskDOM, editTaskDOM };

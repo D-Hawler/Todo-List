@@ -5,11 +5,7 @@ function validationCheck() {
     const titleCheck = validateTitle(title);
     const descriptionCheck = validateDescription(description);
 
-    if (titleCheck && descriptionCheck) {
-        return true;
-    } else {
-        return false;
-    };
+    return titleCheck && descriptionCheck;
 };
 // validation of all elements
 
