@@ -1,3 +1,4 @@
+import { Project } from "./creatorTask.js";
 function validationCheck() {
     const title = document.querySelector("dialog #title");
     const description = document.querySelector("dialog #description");
@@ -9,6 +10,14 @@ function validationCheck() {
 };
 // validation of all elements
 
+function validationCheckForList() {
+    const title = document.querySelector("dialog #title");
+    const titleCheck = validateTitle(title);
+    const titleCheckForID = validateTitleID(title);
+
+    return titleCheck && titleCheckForID;
+}
+
 
 let activeTooltip = null;
 function showTooltip(targetElement, message) {
@@ -18,7 +27,7 @@ function showTooltip(targetElement, message) {
     }
 
     const descriptionTooltip = tippy(targetElement, {
-        appendTo: () => document.querySelector("dialog"),
+        appendTo: document.body,
         content: message,
         trigger: "manual",
         placement: "bottom",
@@ -57,5 +66,18 @@ function validateDescription(description) {
 };
 // description validity check
 
+function validateTitleID(title) {
+    const dialog = document.querySelector("form");
+    if (!Project.getFromID(title.value)) {
+        title.classList.remove("invalid");
+        return true;
+    } else {
+        title.classList.add("invalid");
+        showTooltip(dialog, "Such a sheet already exists, the name of the sheet must be unique.");
+        return false;
+    };
+};
+// title ID validity check
 
-export { validationCheck };
+
+export { validationCheck, validationCheckForList };

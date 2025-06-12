@@ -1,8 +1,42 @@
+import { getValueDialogForm } from "./managerTasks.js";
+import { createTaskDOM, createListDOM } from "./createDOM.js";
+import { validationCheck, validationCheckForList } from "./validation.js";
+import { parseISO, format, isBefore } from "https://esm.sh/date-fns";
 class Project {
-    forToday = [];
+    static globalList = [{"name": "forToday", "elements": []}];
+    constructor(name) {
+        this.name = name;
+        this.elements = [];
+    };
+
+
+    static getFromID(listElement) {
+        return Project.globalList.find(list => list.name === listElement);
+    };
+    // finds an object by ID in the global list
+
+    static getIndexFromID(listElement) {
+        return Project.globalList.findIndex(list => list.name === listElement);
+    };
+    // finds an index object by its identifier in the global list
+
+    static addList(list) {
+        Project.globalList.push(list);
+        Project.globalList.sort((a, b) => a.name.localeCompare(b.name));
+    };
+    // adding to the list and sort array
+
+    static removeList(list) {
+        const listIndex = Project.getFromID(list);
+        if (list !== -1) {
+            Project.globalList.splice(listIndex, 1);
+        } else {
+            throw Error("For some reason this object is not in the database.");
+        };
+    };
+    // deletion into the list and sort array
 };
 
-import { parseISO, parse, format, isBefore } from "https://esm.sh/date-fns";
 class Todo {
     static globalTodo = [];
     #ID;
@@ -38,9 +72,38 @@ class Todo {
     get id() {
         return this.#ID;
     };
+
+
+    static getFromID(taskElement) {
+        return Todo.globalTodo.find(task => task.id === taskElement.id);
+    };
+    // finds an object by ID in the global task list
+
+    static getIndexFromID(taskElement) {
+        return Todo.globalTodo.findIndex(task => task.id === taskElement.id);
+    };
+    // finds an index object by its identifier in the global task list
+
+    static addArrTodo(taskElement) {
+        Todo.globalTodo.push(taskElement);
+    };
+    // adding to the task array
+
+    static removeArrTodo(taskElement) {
+        const taskIndex = Todo.getFromID(taskElement);
+        if (taskIndex !== -1) {
+            Todo.globalTodo.splice(taskIndex, 1);
+        } else {
+            throw Error("For some reason this object is not in the database.");
+        };
+    };
+    // deletion into the task array
 };
 
-import { validationCheck } from "./validation.js";
+
+const globalData = [Todo.globalTodo, Project.globalList];
+
+
 document.querySelector("#createTask button").addEventListener("click", () => {
      fetch("diologWindow/creatorTaskDialog.html")
         .then(response => response.text())
@@ -49,12 +112,12 @@ document.querySelector("#createTask button").addEventListener("click", () => {
             const dialog = document.querySelector("dialog");
             if (dialog) {
                 document.body.classList.add("blurred");
-                dialog.showModal();
+                dialog.show();
                 dialog.addEventListener("keydown", function(event) {
                     if (event.key === "Escape" || event.key === "Enter") {
                         event.stopPropagation();
                         event.preventDefault();
-                    }
+                    };
                 }, true);
             };
             // opens the task creation window
@@ -76,99 +139,73 @@ document.querySelector("#createTask button").addEventListener("click", () => {
 });
 
 
-import { createTaskDOM } from "./createDOM.js";
 function createTask() {
     const value = getValueDialogForm();
 
     const taskElement = new Todo(value[0], value[1], value[2], value[3]);
-    addArrTodo(taskElement);
+    Todo.addArrTodo(taskElement);
     createTaskDOM(taskElement);
 };
 // creates an instance of a class (task)
 
-function addArrTodo(taskElement) {
-    Todo.globalTodo.push(taskElement);
-};
-// adding to the task array
-
-function removeArrTodo(taskElement) {
-    const taskIndex = getFromID(taskElement);
-    if (taskIndex !== -1) {
-        Todo.globalTodo.splice(taskIndex, 1);
-    } else {
-        throw Error("For some reason this object is not in the database.");
-    }
-};
-// deletion into the task array
-
-
-
-
-
-// перенос функциий? export { Todo };??
-// globalTodo = [{todo}{listTodo}];
-
-// 1. открытие карточки task при нажатии на неё.
-// 2. Local storeg.
-// 3. листы и их менеджмент.
-
-
-function fillingTaskInformation(taskElement) {
-    const task = getFromID(taskElement);
-    if (task !== undefined) {
-        const form = document.querySelector("form");
-
-        if (task.dueDate !== "Overdue" && task.dueDate !== "Indefinitely") {
-            const date = parse(task.dueDate, "dd.MM.yyyy", new Date());
-            form.elements["dueDate"].value = format(date, "yyyy-MM-dd");
-        };
-
-        form.elements["title"].value = task.title;
-        form.elements["description"].value = task.description;
-        form.elements["priority"].value = task.priority;
-    } else {
-        throw Error("For some reason this object is not in the database.");
-    };
-};
-// filling in the form for editing a task
 
 
 
 
 
 
+document.getElementById("createTaskList").addEventListener("click", () => {
+    fetch("diologWindow/editListDiolog.html")
+        .then(response => response.text())
+        .then(html => {
+            document.body.insertAdjacentHTML("beforeend", html);
+            const dialog = document.querySelector("dialog");
+
+            if (dialog) {
+                document.body.classList.add("blurred");
+                dialog.show();
+                dialog.addEventListener("keydown", function(event) {
+                    if (event.key === "Escape" || event.key === "Enter") {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }
+                }, true);
+                // opens the list creation window
+
+
+                document.getElementById("editList").addEventListener("click", (event) => {
+                    const form = document.querySelector("form");
+
+                    if (validationCheckForList()) {
+                        const list = new Project(form.elements["title"].value);
+
+                        Project.addList(list);
+                        createListDOM(list.name);
+
+                        document.body.classList.remove("blurred");
+                        dialog.remove();
+                    };
+                });
+                // closes and create the list creation window
+            };
+        });
+});
 
 
 
-function getFromID(taskElement) {
-    return Todo.globalTodo.find(task => task.id === taskElement.id);
-};
-// finds an object by ID in the global task list
-function getIndexFromID(taskElement) {
-    return Todo.globalTodo.findIndex(task => task.id === taskElement.id);
-};
-// finds an index object by its identifier in the global task list
-
-function getValueDialogForm() {
-    const title = document.querySelector("dialog #title");
-    const description = document.querySelector("dialog #description");
-    const dueDate = document.querySelector("dialog #dueDate");
-    const priority = document.querySelector("dialog #priority");
-
-    return [title.value, description.value, dueDate.value, priority.value];
-};
-// returns the value of the form to be filled in
 
 
-function setNewTaskData(taskElement) {
-    const task = getIndexFromID(taskElement);
-    const value = getValueDialogForm();
 
-    Todo.globalTodo[task].title = value[0];
-    Todo.globalTodo[task].description = value[1];
-    Todo.globalTodo[task].dueDate = value[2];
-    Todo.globalTodo[task].priority = value[3];
-};
-// editing task data in the database
+(function() {
+    // Example usage: Add tasks to the default 'forToday' project
+    const forTodayProject = Project.globalList[0];
+    forTodayProject.elements.push(new Todo("Buy groceries", "Get milk, bread, and eggs", "2025-06-15", "Normal"));
+    forTodayProject.elements.push(new Todo("Finish project", "Complete frontend and submit for review", "2025-06-20", "Normal"));
+    forTodayProject.elements.push(new Todo("Call the doctor", "Schedule an appointment for next week", "2025-06-13", "Normal"));
+    forTodayProject.elements.push(new Todo("Clean the apartment", "Vacuum and mop the floors", "2025-06-14", "Normal"));
+})();
 
-export { fillingTaskInformation, removeArrTodo, getFromID, getIndexFromID, setNewTaskData, getValueDialogForm};
+
+
+
+export { Todo, Project };
