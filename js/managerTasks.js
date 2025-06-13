@@ -1,6 +1,6 @@
-import { Todo } from "./creatorTask.js";
+import { Project, Todo } from "./creatorTask.js";
 import { editTaskDOM, contentFillingForList, contentFillingForTask } from "./createDOM.js";
-import { validationCheck } from "./validation.js";
+import { validationCheck, validationCheckForEditList } from "./validation.js";
 
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("delete")) {
@@ -49,17 +49,52 @@ document.addEventListener("click", (event) => {
         });
     };
 
-
     const projectDiv = event.target.closest(".project");
     if (projectDiv && event.target.tagName === "BUTTON") {
         const article = document.querySelector("article");
         article.replaceChildren();
         contentFillingForList(projectDiv.id);
-
-        console.log("DD");
     };
+    // list opening
 
+    if (event.target.id.includes("editList")) {
+        const oldListDiv = document.querySelector("article > div");
+        const oldListName = oldListDiv.id;
+        const targetListName = document.getElementById("title").value;
+        const listName = document.querySelector(`nav > div:last-child > #${oldListName}`);
 
+        const valid = validationCheckForEditList();
+        if (listName) {
+            if (valid) {
+                listName.querySelector("button").textContent = targetListName;
+                listName.id = targetListName;
+
+                oldListDiv.id = targetListName;
+                Project.getFromID(oldListName).name = targetListName;
+            };
+        } else {
+            throw Error("For some reason this object is not in the database.");
+        };
+    };
+    // edit list name
+
+    if (event.target.id.includes("addToList")) {};
+    // add tasks for the list
+
+    if (event.target.id.includes("deleteToList")) {
+        const oldListName = document.querySelector("article > div").id;
+        const listName = document.querySelector(`nav > div:last-child > #${oldListName}`); 
+
+        if (oldListName && listName) {
+            Project.removeList(oldListName);
+            listName.remove();
+            
+            contentFillingForTask();
+        } else {
+            throw Error("For some reason this object is not in the database.");
+        };
+    };
+    // delete list
 });
 
 
@@ -71,7 +106,7 @@ document.addEventListener("click", (event) => {
 
 
 
-// 1. открытие карточки task при нажатии на неё.
+
 // 2. Local storeg.
 // 3. листы и их менеджмент.
 // 4. фильтр.
@@ -112,7 +147,7 @@ function getValueDialogForm() {
 // returns the value of the form to be filled in
 
 function setNewTaskData(taskElement) {
-    const task = getIndexFromID(taskElement);
+    const task = Todo.getIndexFromID(taskElement);
     const value = getValueDialogForm();
 
     Todo.globalTodo[task].title = value[0];
@@ -124,9 +159,6 @@ function setNewTaskData(taskElement) {
 
 
 document.querySelector("#allTask button").addEventListener("click", () => {
-    const article = document.querySelector("article");
-
-    article.replaceChildren();
     contentFillingForTask();
 });
 

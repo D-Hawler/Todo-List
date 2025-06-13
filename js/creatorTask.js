@@ -144,18 +144,16 @@ function createTask() {
 
     const taskElement = new Todo(value[0], value[1], value[2], value[3]);
     Todo.addArrTodo(taskElement);
-    createTaskDOM(taskElement);
+
+    const listMenu = document.querySelector("article > .listMemu");
+    if (!listMenu) {
+        createTaskDOM(taskElement);
+    };
 };
 // creates an instance of a class (task)
 
-
-
-
-
-
-
 document.getElementById("createTaskList").addEventListener("click", () => {
-    fetch("diologWindow/editListDiolog.html")
+    fetch("diologWindow/createListDiolog.html")
         .then(response => response.text())
         .then(html => {
             document.body.insertAdjacentHTML("beforeend", html);
@@ -173,7 +171,7 @@ document.getElementById("createTaskList").addEventListener("click", () => {
                 // opens the list creation window
 
 
-                document.getElementById("editList").addEventListener("click", (event) => {
+                document.getElementById("createList").addEventListener("click", (event) => {
                     const form = document.querySelector("form");
 
                     if (validationCheckForList()) {

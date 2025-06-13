@@ -17,6 +17,15 @@ function validationCheckForList() {
 
     return titleCheck && titleCheckForID;
 }
+// validation of list
+
+function validationCheckForEditList() {
+    const title = document.querySelector(".listMemu > div > .title > #title");
+    const titleCheck = validateTitle(title);
+    const titleCheckForID = validateTitleID(title);
+
+    return titleCheck && titleCheckForID;
+};
 
 
 let activeTooltip = null;
@@ -68,16 +77,27 @@ function validateDescription(description) {
 
 function validateTitleID(title) {
     const dialog = document.querySelector("form");
-    if (!Project.getFromID(title.value)) {
-        title.classList.remove("invalid");
-        return true;
+    if (dialog) {
+        if (!Project.getFromID(title.value)) {
+            title.classList.remove("invalid");
+            return true;
+        } else {
+            title.classList.add("invalid");
+            showTooltip(dialog, "Such a sheet already exists, the name of the sheet must be unique.");
+            return false;
+        };
     } else {
-        title.classList.add("invalid");
-        showTooltip(dialog, "Such a sheet already exists, the name of the sheet must be unique.");
-        return false;
+        if (!Project.getFromID(title.value)) {
+            title.classList.remove("invalid");
+            return true;
+        } else {
+            title.classList.add("invalid");
+            showTooltip(title, "Such a sheet already exists, the name of the sheet must be unique.");
+            return false;
+        };
     };
 };
 // title ID validity check
 
 
-export { validationCheck, validationCheckForList };
+export { validationCheck, validationCheckForList, validationCheckForEditList };

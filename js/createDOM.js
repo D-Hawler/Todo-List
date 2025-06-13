@@ -63,7 +63,7 @@ function createTaskDOM(taskElement) {
 
     article.appendChild(main);
 };
-
+// creating a task in the DOM
 
 function editTaskDOM(taskElement) {
     const taskValue = Todo.getFromID(taskElement);
@@ -90,7 +90,7 @@ function editTaskDOM(taskElement) {
     };
     priority.classList.add(taskValue.priority.toLowerCase());
 };
-
+// edit of an existing task
 
 function createListDOM(name) {
     const div = document.createElement("div");
@@ -103,8 +103,7 @@ function createListDOM(name) {
     div.appendChild(nameList);
     document.querySelector("nav > div:last-of-type").appendChild(div);
 };
-
-
+// list creation in the DOM
 
 function contentFillingForList(nameList) {
     const list = Project.getFromID(nameList);
@@ -118,8 +117,13 @@ function contentFillingForList(nameList) {
         throw Error("For some reason this object is not in the database.");
     };
 };
+// filling the DOM with tasks from the list
 
 function contentFillingForTask() {
+    const article = document.querySelector("article");
+
+    article.replaceChildren();
+    
     const task = Todo.globalTodo;
 
     if (task !== undefined) {
@@ -130,23 +134,18 @@ function contentFillingForTask() {
         throw Error("For some reason this object is not in the database.");
     };
 };
-
-
-
-
-
-
-
+// filling the DOM with tasks from all task
 
 function createListMemu(nameList) {
     const article = document.querySelector("#content > article");
 
-    const listMemu = document.querySelector("div");
+    const listMemu = document.createElement("div");
+    listMemu.id = nameList;
     listMemu.classList.add("listMemu");
 
     const div1 = document.createElement("div");
 
-    const title = document.createElement("title");
+    const title = document.createElement("div");
     title.classList.add("title");
 
     const input = document.createElement("input");
@@ -160,23 +159,24 @@ function createListMemu(nameList) {
     editList.classList.add("interaction");
 
     const button1 = document.createElement("button");
-    button1.textContent = "&#x2713;";
+    button1.id = "editList";
+    button1.innerHTML = "&#x2713;";
 
     const div2 = document.createElement("div");
 
     const addToList = document.createElement("div");
-    addToList.id = "addToList";
     addToList.classList.add("interaction");
 
     const button2 = document.createElement("button");
-    button2.textContent = "&#x002B;";
+    button2.id = "addToList";
+    button2.innerHTML = "&#x002B;";
 
     const deleteToList = document.createElement("div");
-    deleteToList.id = "deleteToList";
     deleteToList.classList.add("interaction");
 
     const button3 = document.createElement("button");
-    button3.textContent = "&#x1F5D1;";
+    button3.id = "deleteToList";
+    button3.innerHTML = "&#x1F5D1;";
 
 
     editList.appendChild(button1);  
@@ -198,21 +198,6 @@ function createListMemu(nameList) {
 
     article.appendChild(listMemu);
 };
-
-// <div class="listMemu">
-//                     <div>
-//                         <div class="title">
-//                             <input type="text" id="title" maxlength="20">
-//                         </div>
-//                         <div id="editList" class="interaction"><button>&#x2713;</button></div>
-//                     </div>
-//                     <div>
-//                         <div id="addToList" class="interaction"><button>&#x002B;</button></div>
-//                         <div id="deleteToList" class="interaction"><button>&#x1F5D1;</button></div>
-//                     </div>
-//                 </div>
-
-
-
+// switch to the contents list
 
 export { createTaskDOM, editTaskDOM, createListDOM, contentFillingForList, contentFillingForTask };
