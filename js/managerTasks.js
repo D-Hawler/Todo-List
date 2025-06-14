@@ -1,11 +1,16 @@
 import { Project, Todo } from "./creatorTask.js";
-import { editTaskDOM, contentFillingForList, contentFillingForTask } from "./createDOM.js";
+import { editTaskDOM, contentFillingForList, contentFillingForTask, contentFillingForAdd, contentFillingForRemove } from "./createDOM.js";
 import { validationCheck, validationCheckForEditList } from "./validation.js";
 
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("delete")) {
         const taskElement = event.target.closest(".task");
+
+        const task = Todo.getFromID(taskElement);
         if (taskElement) {
+            if (task.list !== undefined) {
+                task.list.elements.splice(task, 1);
+            };
             Todo.removeArrTodo(taskElement);
             taskElement.remove();
         };
@@ -78,8 +83,103 @@ document.addEventListener("click", (event) => {
     };
     // edit list name
 
-    if (event.target.id.includes("addToList")) {};
-    // add tasks for the list
+    if (event.target.id.includes("addToList")) {
+        fetch("diologWindow/additionToTheList.html")
+        .then(response => response.text())
+        .then(html => {
+            document.body.insertAdjacentHTML("beforeend", html);
+            const dialog = document.querySelector("dialog");
+            if (dialog) {
+                document.body.classList.add("blurred");
+                dialog.showModal();
+                dialog.addEventListener("keydown", function(event) {
+                    if (event.key === "Escape" || event.key === "Enter") {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }
+                }, true);
+                // opens a dialog box for adding new tasks
+
+                contentFillingForAdd();
+
+                document.querySelectorAll("dialog .add").forEach(element => element.addEventListener("click", (event) => {
+                    const taskID = event.target.closest(".task");
+
+                   const nameList = document.querySelector("article .listMemu").id;
+                   const taskIndex = Todo.getIndexFromID(taskID);
+
+                   if (taskIndex !== -1) {
+                        Todo.addTodoToList(Project.getFromID(nameList), Todo.getFromID(taskID));
+                        Todo.globalTodo[taskIndex].list = nameList;
+                        taskID.remove();
+                   } else {
+                        throw Error("For some reason this object is not in the database.");
+                   };
+                }));
+                // add tasks for the list
+            };
+
+            document.querySelector("dialog #close").addEventListener("click", () => {
+                document.body.classList.remove("blurred");
+                dialog.remove();
+
+                const nameList = document.querySelector("article .listMemu").id;
+                const article = document.querySelector("article");
+                article.replaceChildren();
+                contentFillingForList(nameList);
+            });
+            // closes a dialog box for adding new tasks
+        });
+    };
+
+    if (event.target.id.includes("removeToList")) {
+        fetch("diologWindow/additionToTheList.html")
+        .then(response => response.text())
+        .then(html => {
+            document.body.insertAdjacentHTML("beforeend", html);
+            const dialog = document.querySelector("dialog");
+            if (dialog) {
+                document.body.classList.add("blurred");
+                dialog.showModal();
+                dialog.addEventListener("keydown", function(event) {
+                    if (event.key === "Escape" || event.key === "Enter") {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }
+                }, true);
+                // opens a dialog box for remove tasks
+
+                contentFillingForRemove();
+
+                document.querySelectorAll("dialog .remove").forEach(element => element.addEventListener("click", (event) => {
+                    const taskID = event.target.closest(".task");
+
+                   const nameList = document.querySelector("article .listMemu").id;
+                   const list = Project.getFromID(nameList);
+                   const taskIndex = Todo.getFromID(taskID);
+
+                   if (taskIndex !== -1) {
+                        list.elements.splice(taskIndex, 1);
+                        taskID.remove();
+                   } else {
+                        throw Error("For some reason this object is not in the database.");
+                   };
+                }));
+                // remove tasks for the list
+            };
+
+            document.querySelector("dialog #close").addEventListener("click", () => {
+                document.body.classList.remove("blurred");
+                dialog.remove();
+
+                const nameList = document.querySelector("article .listMemu").id;
+                const article = document.querySelector("article");
+                article.replaceChildren();
+                contentFillingForList(nameList);
+            });
+            // closes a dialog box for adding new tasks
+        });
+    };
 
     if (event.target.id.includes("deleteToList")) {
         const oldListName = document.querySelector("article > div").id;
@@ -96,25 +196,6 @@ document.addEventListener("click", (event) => {
     };
     // delete list
 });
-
-
-
-
-
-
-
-
-
-
-
-// 2. Local storeg.
-// 3. листы и их менеджмент.
-// 4. фильтр.
-
-
-
-
-
 
 import { parse, format } from "https://esm.sh/date-fns";
 function fillingTaskInformation(taskElement) {
@@ -161,40 +242,5 @@ function setNewTaskData(taskElement) {
 document.querySelector("#allTask button").addEventListener("click", () => {
     contentFillingForTask();
 });
-
-
-
-// function fillingListInformation(list) {
-//     const form = document.querySelector("form");
-//     form.elements["title"].value = list.id;
-// };
-
-// fetch("diologWindow/editListDiolog.html")
-//         .then(response => response.text())
-//         .then(html => {
-//             document.body.insertAdjacentHTML("beforeend", html);
-//             const dialog = document.querySelector("dialog");
-
-//             if (dialog) {
-//                 document.body.classList.add("blurred");
-//                 dialog.showModal();
-//                 dialog.addEventListener("keydown", function(event) {
-//                     if (event.key === "Escape" || event.key === "Enter") {
-//                         event.stopPropagation();
-//                         event.preventDefault();
-//                     }
-//                 }, true);
-//                 fillingListInformation(projectDiv);
-//             };
-//         });
-//     };
-// opens the list edit window
-
-
-
-// document.getElementById("taskFromList").addEventListener("click", () => {});
-
-
-
 
 export { getValueDialogForm };

@@ -1,5 +1,5 @@
 import { getValueDialogForm } from "./managerTasks.js";
-import { createTaskDOM, createListDOM } from "./createDOM.js";
+import { createTaskDOM, createListDOM, contentFillingForTask } from "./createDOM.js";
 import { validationCheck, validationCheckForList } from "./validation.js";
 import { parseISO, format, isBefore } from "https://esm.sh/date-fns";
 class Project {
@@ -45,7 +45,7 @@ class Todo {
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
-        this.checklist = false;
+        this.list = undefined;
         this.#ID = crypto.randomUUID();
     };
 
@@ -89,8 +89,14 @@ class Todo {
     };
     // adding to the task array
 
+    static addTodoToList(listName, taskElement) {
+        listName.elements.push(taskElement);
+        taskElement.list = listName;
+    };
+    // adding to the task to the list
+
     static removeArrTodo(taskElement) {
-        const taskIndex = Todo.getFromID(taskElement);
+        const taskIndex = Todo.getIndexFromID(taskElement);
         if (taskIndex !== -1) {
             Todo.globalTodo.splice(taskIndex, 1);
         } else {
@@ -194,16 +200,49 @@ document.getElementById("createTaskList").addEventListener("click", () => {
 
 
 
+
+
+
+
+
+
 (function() {
-    // Example usage: Add tasks to the default 'forToday' project
-    const forTodayProject = Project.globalList[0];
-    forTodayProject.elements.push(new Todo("Buy groceries", "Get milk, bread, and eggs", "2025-06-15", "Normal"));
-    forTodayProject.elements.push(new Todo("Finish project", "Complete frontend and submit for review", "2025-06-20", "Normal"));
-    forTodayProject.elements.push(new Todo("Call the doctor", "Schedule an appointment for next week", "2025-06-13", "Normal"));
-    forTodayProject.elements.push(new Todo("Clean the apartment", "Vacuum and mop the floors", "2025-06-14", "Normal"));
+    const todo1 = new Todo("Task 1", "Description 1", "2025-06-15", "Normal");
+    const todo2 = new Todo("Task 2", "Description 2", "2025-06-16", "Priority");
+    const todo3 = new Todo("Task 3", "Description 3", "2025-06-17", "Urgently");
+    const todo4 = new Todo("Task 4", "Description 4", "2025-06-18", "Normal");
+    const todo5 = new Todo("Task 5", "Description 5", "2025-06-19", "Priority");
+    const todo6 = new Todo("Task 6", "Description 6", "2025-06-20", "Urgently");
+    const todo7 = new Todo("Task 7", "Description 7", "2025-06-21", "Normal");
+    const todo8 = new Todo("Task 8", "Description 8", "2025-06-22", "Priority");
+    const todo9 = new Todo("Task 9", "Description 9", "2025-06-23", "Urgently");
+    const todo10 = new Todo("Task 10", "Description 10", "2025-06-24", "Normal");
+    const todo11 = new Todo("Task 11", "Description 11", "2025-06-25", "Priority");
+    const todo12 = new Todo("Task 12", "Description 12", "2025-06-26", "Urgently");
+
+    Todo.addArrTodo(todo1);
+    Todo.addArrTodo(todo2);
+    Todo.addArrTodo(todo3);
+    Todo.addArrTodo(todo4);
+    Todo.addArrTodo(todo5);
+    Todo.addArrTodo(todo6);
+    Todo.addArrTodo(todo7);
+    Todo.addArrTodo(todo8);
+    Todo.addArrTodo(todo9);
+    Todo.addArrTodo(todo10);
+    Todo.addArrTodo(todo11);
+    Todo.addArrTodo(todo12);
+
+    Todo.addTodoToList(Project.globalList[0], todo2);
+    Todo.addTodoToList(Project.globalList[0], todo4);
+    Todo.addTodoToList(Project.globalList[0], todo9);
+    Todo.addTodoToList(Project.globalList[0], todo12);
 })();
 
 
 
+(function() {
+    contentFillingForTask();
+})();
 
 export { Todo, Project };

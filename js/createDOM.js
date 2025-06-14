@@ -136,6 +136,88 @@ function contentFillingForTask() {
 };
 // filling the DOM with tasks from all task
 
+function contentFillingForAdd() {
+    const nameList = document.querySelector("article .listMemu").id;
+    const listID = Project.getIndexFromID(nameList);
+
+    for (let i = 0; i < Todo.globalTodo.length; i++) {
+        if (!Project.globalList[listID].elements.some(task => task.id === Todo.globalTodo[i].id)) {
+            contentFilling("&#x002B;", "add", i);
+        };
+    };
+};
+// filling the DOM with add tasks from the list
+
+function contentFillingForRemove() {
+    const nameList = document.querySelector("article .listMemu").id;
+    const listID = Project.getIndexFromID(nameList);
+
+    for (let i = 0; i < Todo.globalTodo.length; i++) {
+        if (Project.globalList[listID].elements.some(task => task.id === Todo.globalTodo[i].id)) {
+            contentFilling("&#x2212;", "remove", i);
+        };
+    };
+};
+// filling the DOM with remove tasks from the list
+
+function contentFilling(char, act, i) {
+    const dialog = document.querySelector("dialog > :last-child");
+
+    const div = document.createElement("div");
+    div.classList.add("task");
+    div.id = Todo.globalTodo[i].id;
+
+    const name = document.createElement("div");
+    name.classList.add("name");
+
+    const h2 = document.createElement("h2");
+    h2.textContent = Todo.globalTodo[i].title;
+
+    const feature = document.createElement("div");
+    feature.classList.add("feature");
+
+    const divButton = document.createElement("div");
+
+    const button = document.createElement("button");
+    button.classList.add(act);
+    button.innerHTML = char;
+
+    const info = document.createElement("div");
+    info.classList.add("info");
+
+    const date = document.createElement("h3");
+    if (
+        Todo.globalTodo[i].dueDate !== "Overdue" &&
+        Todo.globalTodo[i].dueDate !== "Indefinitely"
+    ) {
+        date.textContent = `Until ${Todo.globalTodo[i].dueDate}`;
+    } else {
+        date.textContent = Todo.globalTodo[i].dueDate;
+    }
+
+    const priority = document.createElement("h3");
+    priority.textContent = Todo.globalTodo[i].priority;
+    priority.classList.add("priorityMenu");
+    priority.classList.add(Todo.globalTodo[i].priority.toLowerCase());
+
+    name.appendChild(h2);
+
+    divButton.appendChild(button);
+
+    feature.appendChild(divButton);
+
+    info.appendChild(date);
+    info.appendChild(priority);
+
+    feature.appendChild(info);
+
+    div.appendChild(name);
+    div.appendChild(feature);
+
+    dialog.appendChild(div);
+};
+// filling the DOM from the list
+
 function createListMemu(nameList) {
     const article = document.querySelector("#content > article");
 
@@ -171,12 +253,19 @@ function createListMemu(nameList) {
     button2.id = "addToList";
     button2.innerHTML = "&#x002B;";
 
+    const removeToList = document.createElement("div");
+    removeToList.classList.add("interaction");
+
+    const button3 = document.createElement("button");
+    button3.id = "removeToList";
+    button3.innerHTML = "&#x2212;";
+
     const deleteToList = document.createElement("div");
     deleteToList.classList.add("interaction");
 
-    const button3 = document.createElement("button");
-    button3.id = "deleteToList";
-    button3.innerHTML = "&#x1F5D1;";
+    const button4 = document.createElement("button");
+    button4.id = "deleteToList";
+    button4.innerHTML = "&#x1F5D1;";
 
 
     editList.appendChild(button1);  
@@ -188,10 +277,13 @@ function createListMemu(nameList) {
 
     addToList.appendChild(button2);  
 
-    deleteToList.appendChild(button3);
+    removeToList.appendChild(button3);
+
+    deleteToList.appendChild(button4);
 
     div2.appendChild(addToList);
-    div2.appendChild(deleteToList)
+    div2.appendChild(removeToList);
+    div2.appendChild(deleteToList);
 
     listMemu.appendChild(div1);
     listMemu.appendChild(div2);
@@ -200,4 +292,4 @@ function createListMemu(nameList) {
 };
 // switch to the contents list
 
-export { createTaskDOM, editTaskDOM, createListDOM, contentFillingForList, contentFillingForTask };
+export { createTaskDOM, editTaskDOM, createListDOM, contentFillingForList, contentFillingForTask, contentFillingForAdd, contentFillingForRemove };
