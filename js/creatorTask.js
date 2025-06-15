@@ -1,9 +1,9 @@
 import { getValueDialogForm } from "./managerTasks.js";
-import { createTaskDOM, createListDOM, contentFillingForTask } from "./createDOM.js";
+import { createTaskDOM, createListDOM } from "./createDOM.js";
 import { validationCheck, validationCheckForList } from "./validation.js";
-import { parseISO, format, isBefore } from "https://esm.sh/date-fns";
+import { parseISO, format, isBefore, isValid } from "https://esm.sh/date-fns";
 class Project {
-    static globalList = [{"name": "forToday", "elements": []}];
+    static globalList = [];
     constructor(name) {
         this.name = name;
         this.elements = [];
@@ -35,6 +35,12 @@ class Project {
         };
     };
     // deletion into the list and sort array
+
+    static importElements(list) {
+        const listID = Project.getFromID(list.name);
+        list.elements.forEach(element => listID.elements.push(element));
+    };
+    // to import from localStorage
 };
 
 class Todo {
@@ -50,20 +56,35 @@ class Todo {
     };
 
     set dueDate(value) {
-        if (value !== "") {
-            value = parseISO(value);
-            const today = new Date();
-            const valueDate = new Date(value.getFullYear(), value.getMonth(), value.getDate());
-            const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-            if (!isBefore(valueDate, todayDate)) {
-                this._dueDate = format(value, "dd.MM.yyyy");
-            } else {
-                this._dueDate = "Overdue";
-            };
-        } else {
-            this._dueDate = "Indefinitely";
+        if (value === "Overdue" || value === "Indefinitely") {
+            this._dueDate = value;
+            return;
         };
+
+        const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+        if (typeof value === "string" && isoDatePattern.test(value)) {
+            const dateObj = parseISO(value);
+            if (isValid(dateObj)) {
+                const today = new Date();
+                const valueDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                if (!isBefore(valueDate, todayDate)) {
+                    this._dueDate = format(dateObj, "dd.MM.yyyy");
+                } else {
+                    this._dueDate = "Overdue";
+                };
+                return;
+            };
+        };
+
+        const formattedPattern = /^\d{2}\.\d{2}\.\d{4}$/;
+        if (typeof value === "string" && formattedPattern.test(value)) {
+            this._dueDate = value;
+            return;
+        };
+
+        this._dueDate = "Indefinitely";
     };
     get dueDate() {
         return this._dueDate;
@@ -72,7 +93,7 @@ class Todo {
     get id() {
         return this.#ID;
     };
-
+    
 
     static getFromID(taskElement) {
         return Todo.globalTodo.find(task => task.id === taskElement.id);
@@ -105,9 +126,6 @@ class Todo {
     };
     // deletion into the task array
 };
-
-
-const globalData = [Todo.globalTodo, Project.globalList];
 
 
 document.querySelector("#createTask button").addEventListener("click", () => {
@@ -195,54 +213,5 @@ document.getElementById("createTaskList").addEventListener("click", () => {
         });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-(function() {
-    const todo1 = new Todo("Task 1", "Description 1", "2025-06-15", "Normal");
-    const todo2 = new Todo("Task 2", "Description 2", "2025-06-16", "Priority");
-    const todo3 = new Todo("Task 3", "Description 3", "2025-06-17", "Urgently");
-    const todo4 = new Todo("Task 4", "Description 4", "2025-06-18", "Normal");
-    const todo5 = new Todo("Task 5", "Description 5", "2025-06-19", "Priority");
-    const todo6 = new Todo("Task 6", "Description 6", "2025-06-20", "Urgently");
-    const todo7 = new Todo("Task 7", "Description 7", "2025-06-21", "Normal");
-    const todo8 = new Todo("Task 8", "Description 8", "2025-06-22", "Priority");
-    const todo9 = new Todo("Task 9", "Description 9", "2025-06-23", "Urgently");
-    const todo10 = new Todo("Task 10", "Description 10", "2025-06-24", "Normal");
-    const todo11 = new Todo("Task 11", "Description 11", "2025-06-25", "Priority");
-    const todo12 = new Todo("Task 12", "Description 12", "2025-06-26", "Urgently");
-
-    Todo.addArrTodo(todo1);
-    Todo.addArrTodo(todo2);
-    Todo.addArrTodo(todo3);
-    Todo.addArrTodo(todo4);
-    Todo.addArrTodo(todo5);
-    Todo.addArrTodo(todo6);
-    Todo.addArrTodo(todo7);
-    Todo.addArrTodo(todo8);
-    Todo.addArrTodo(todo9);
-    Todo.addArrTodo(todo10);
-    Todo.addArrTodo(todo11);
-    Todo.addArrTodo(todo12);
-
-    Todo.addTodoToList(Project.globalList[0], todo2);
-    Todo.addTodoToList(Project.globalList[0], todo4);
-    Todo.addTodoToList(Project.globalList[0], todo9);
-    Todo.addTodoToList(Project.globalList[0], todo12);
-})();
-
-
-
-(function() {
-    contentFillingForTask();
-})();
 
 export { Todo, Project };
