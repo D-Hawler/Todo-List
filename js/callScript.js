@@ -11,23 +11,29 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("DOMContentLoaded", () => {
     const all = JSON.parse(localStorage.getItem("all") || "[]");
 
-    all[0].map(task => Todo.globalTodo.push(new Todo(task.title, task.description, task._dueDate, task.priority)));
-    all[1].map(list => Project.globalList.push(new Project(list.name)));
-    all[1].map(list => {
-        for (let i = 0; i < list.length; i++) {
-            const taskIndex = Todo.getIndexFromID(list.elements[i]);
-            list.addList(Todo.globalTodo[taskIndex]);
-            // тут баг!!
-        };
+    all[0]?.forEach(task => {
+        const value = new Todo(task.title, task.description, task._dueDate, task.priority, task.ID);
+        Todo.addArrTodo(value);
+    });
+    all[1]?.forEach(list => {
+        const value = new Project(list.name, list.elements);
+        Project.addList(value);
     });
 
     (function() {
-        contentFillingForTask();
+        console.log(Todo.globalTodo.length);
+        console.log(Todo.globalTodo);
+        if (Todo.globalTodo.length > 0) {
+            console.log(Todo.globalTodo.length);
+            contentFillingForTask();
+        };
 
         Project.globalList.forEach(list => createListDOM(list.name));
 
 
         console.log(globalData);
-        console.log(all)
+        console.log(all);
+        console.log(Todo.globalTodo);
+        console.log(Project.globalList);
     })();
 });

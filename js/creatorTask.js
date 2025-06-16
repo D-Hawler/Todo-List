@@ -4,9 +4,9 @@ import { validationCheck, validationCheckForList } from "./validation.js";
 import { parseISO, format, isBefore, isValid } from "https://esm.sh/date-fns";
 class Project {
     static globalList = [];
-    constructor(name) {
+    constructor(name, elements = []) {
         this.name = name;
-        this.elements = [];
+        this.elements = elements;
     };
 
 
@@ -19,6 +19,11 @@ class Project {
         return Project.globalList.findIndex(list => list.name === listElement);
     };
     // finds an index object by its identifier in the global list
+
+    static addTodoToList(listName, taskElement) {
+        listName.push(taskElement);
+    };
+    // adding to the task from list
 
     static addList(list) {
         Project.globalList.push(list);
@@ -35,24 +40,17 @@ class Project {
         };
     };
     // deletion into the list and sort array
-
-    static importElements(list) {
-        const listID = Project.getFromID(list.name);
-        list.elements.forEach(element => listID.elements.push(element));
-    };
-    // to import from localStorage
 };
 
 class Todo {
     static globalTodo = [];
-    #ID;
-    constructor (title, description, dueDate, priority) {
+    constructor (title, description, dueDate, priority, ID = crypto.randomUUID()) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
         this.list = undefined;
-        this.#ID = crypto.randomUUID();
+        this.ID = ID;
     };
 
     set dueDate(value) {
@@ -91,7 +89,7 @@ class Todo {
     };
 
     get id() {
-        return this.#ID;
+        return this.ID;
     };
     
 
